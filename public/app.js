@@ -28,9 +28,9 @@ $(".btn").on('click', function(){
       var note = data.note.body.trim().split(/\r?\n/);
       console.log(note.length);
       console.log(note);
-      $(".modal-body").append("<div id='divNoteList'><ul class='list-group'></ul><div>");
+      $(".modal-body").append("<div id='divNoteList'><ul class='list-group' id='noteList'></ul><div>");
       $.each(note, function( index, value ) {
-        $("ul").append("<li class='list-group-item'id='"+index+"'>"+value+"</li>")
+        $("#noteList").append("<li class='list-group-item'id='"+index+"'>"+value+"</li>")
       });
       
       $("#myModal").modal();
@@ -97,7 +97,7 @@ $(".modal-body").on("click", "li", function() {
 
 $("#btnNewNote").on("click",function(){
   $("#btnNewNote").hide();
-  $("ul").append(`
+  $("#noteList").append(`
     <div class="input-group form-control">
       <input type="text" class="form-control" aria-label="...">
     </div>
