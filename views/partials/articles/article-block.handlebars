@@ -6,12 +6,16 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-          {{!-- {{#each hbsModalObject}} --}}
           <h4 class="modal-title">Modal Header</h4>
         </div>
         <div class="modal-body">
+			<div class="col-lg-12" id="divAddNote"></div>
         </div>
         <div class="modal-footer">
+		  <button type="button" class="btn btn-default" id="btnDeleteNote">Delete Note</button>
+		  <button type="button" class="btn btn-default" id="btnSaveNote">Save</button>
+		  <button type="button" class="btn btn-default" id="btnCancelNote">Cancel</button>
+		  <button type="button" class="btn btn-default" id="btnNewNote">New Note</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </div>

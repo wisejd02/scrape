@@ -28,9 +28,9 @@ $(".btn").on('click', function(){
       var note = data.note.body.trim().split(/\r?\n/);
       console.log(note.length);
       console.log(note);
+      $(".modal-body").append("<div id='divNoteList'><ul class='list-group'></ul><div>");
       $.each(note, function( index, value ) {
-        //alert( index + ": " + value );
-        $(".modal-body").append("<p>"+value+"</p>")
+        $("ul").append("<li class='list-group-item'id='"+index+"'>"+value+"</li>")
       });
       
       $("#myModal").modal();
@@ -39,10 +39,30 @@ $(".btn").on('click', function(){
   }
 })
 
+$('#myModal').on('hidden.bs.modal', function () {
+  $(".modal-body").html("");
+})
+
+$('#myModal').on('show.bs.modal', function () {
+  $("#btnDeleteNote").hide();
+  $("#btnSaveNote").hide();
+  $("#btnCancelNote").hide();
+  $("#btnNewNote").show();
+})
+
 
 // Whenever someone clicks a p tag
-$(document).on("click", "p", function() {
+$(".modal-body").on("click", "li", function() {
   console.log(this);
+  $('.modal-body li').not(this).removeClass('active');
+  $(this).toggleClass("active");
+  if($( "li" ).hasClass( "active" )){
+    $("#btnDeleteNote").show();
+  }else{
+    $("#btnDeleteNote").hide();
+  }
+
+  
   //Empty the notes from the note section
   // $("#notes").empty();
   // // Save the id from the p tag
@@ -73,6 +93,31 @@ $(document).on("click", "p", function() {
   //       $("#bodyinput").val(data.note.body);
   //     }
   //   });
+});
+
+$("#btnNewNote").on("click",function(){
+  $("#btnNewNote").hide();
+  $("ul").append(`
+    <div class="input-group form-control">
+      <input type="text" class="form-control" aria-label="...">
+    </div>
+  `)
+  $("#btnSaveNote").show();
+  $("#btnCancelNote").show();
+});
+
+$("#btnSaveNote").on("click",function(){
+  $("#btnSaveNote").hide();
+  $("#btnCancelNote").hide();
+  $("#btnNewNote").show();
+  $(".input-group").remove();
+});
+
+$("#btnCancelNote").on("click",function(){
+  $("#btnSaveNote").hide();
+  $("#btnCancelNote").hide();
+  $("#btnNewNote").show();
+  $(".input-group").remove();
 });
 
 // When you click the savenote button
