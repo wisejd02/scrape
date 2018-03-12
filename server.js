@@ -48,15 +48,24 @@ mongoose.connect(MONGODB_URI, {
 //var routes = require("./routes/index.js");
 
 //app.use(routes);
+
+app.get("/", function(req, res) {
+
+  res.render("index", {title:'Scraping With Mongoose and HBS',message:'Click button to get new recipes!!'})
+
+
+});
+
 //A GET route for scraping the echojs website
 app.get("/scrape", function(req, res) {
+  
   // First, we grab the body of the html with request
   axios.get("https://www.allrecipes.com/").then(function(response) {
     //request("https://www.allrecipes.com/", function(error, response, html) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     
     var $ = cheerio.load(response.data);
-
+    arrResults = [];
     // Now, we grab every h2 within an article tag, and do the following:
     $("article.grid-col--fixed-tiles").each(function(i, element) {
     //   console.log(element);
@@ -64,30 +73,41 @@ app.get("/scrape", function(req, res) {
       var image = $(element).children().attr("data-imageurl");
       var link = $(element).children("a").attr("href");
     //   // Save an empty result object
-      var result = {};
-
+      
     //   // Add the text and href of every link, and save them as properties of the result object
-      if(recipeName && image && link){
+    var result = {}; 
+    if(recipeName && image && link){
         result.title = recipeName;
         result.link = link;
         result.image = image;
-
+        arrResults.push(result);
         // Create a new Article using the `result` object built from scraping
-        db.Article.create(result)
-        .then(function(dbArticle) {
-          // View the added result in the console
-          console.log(dbArticle);
-        })
-        .catch(function(err) {
-          // If an error occurred, send it to the client
-          return res.json(err);
-        });
+        // db.Article.create(result)
+        // .then(function(dbArticle) {
+        //   // View the added result in the console
+        //   for (var i = 0; i < dbArticle.length; i++) {
+        //     dbArticle[i].image = dbArticle[i].image.replace(/'/g,"");
+        //   }
+        //   console.log(dbArticle);
+        //   //res.render("index", {title:'Scraping With Mongoose and HBS',message:'Scrape Complete',hbsObject:dbArticle})
+        // })
+        // .catch(function(err) {
+        //   // If an error occurred, send it to the client
+        //   return res.json(err);
+        // });
       }
       
     });
     
     // If we were able to successfully scrape and save an Article, send a message to the client
-    res.send("Scrape Complete");
+    //res.send("Scrape Complete");
+    for (var i = 0; i < arrResults.length; i++) {
+      arrResults[i].image = arrResults[i].image.replace(/'/g,"");
+        }
+      console.log(arrResults)
+        res.render("index", {title:'Scraping With Mongoose and HBS',message:'Scrape Complete',hbsObject:arrResults,script:'/index.js'})
+     
+    
   });
 });
 
@@ -107,7 +127,7 @@ app.get("/articles", function(req, res) {
       //   link: dbArticle[0].link
       // };
        //console.log(hbsObject);
-        res.render("index", {title:'Scraping With Mongoose and HBS',hbsObject: dbArticle})
+        res.render("article", {title:'Scraping With Mongoose and HBS',hbsObject: dbArticle,script:'/app.js'})
 
 
       //res.json(dbArticle);
@@ -159,6 +179,11 @@ app.post("/articles/:id", function(req, res) {
     });
 });
 
+// Route for saving/updating an Article's associated Note
+app.post("/favorites", function(req, res) {
+  console.log(req.body)
+  db.Article.create(req.body)
+});
 // Start the server
 app.listen(PORT, function() {
   console.log("App running on port " + PORT + "!");

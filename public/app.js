@@ -15,23 +15,26 @@ $(".btn").on('click', function(){
   console.log(this);
   console.log($(this).attr("data-id"));
   console.log($(this).attr("id"));
-  if($(this).attr("id") === 'btnSaveArticle'){
-    alert("Saved to your favorites")
+  if($(this).attr("id") === 'btnDeleteFavorite'){
+    alert("Removed from your favorites")
   }else if($(this).attr("id") === 'btnAddNote'){
     var thisId = $(this).attr("data-id");
     $.ajax({
       method: "GET",
       url: "/articles/" + thisId
     }).done(function(data) {
-      console.log(data);
-      $(".modal-title").html(data.note.title);
-      var note = data.note.body.trim().split(/\r?\n/);
-      console.log(note.length);
-      console.log(note);
-      $(".modal-body").append("<div id='divNoteList'><ul class='list-group' id='noteList'></ul><div>");
-      $.each(note, function( index, value ) {
-        $("#noteList").append("<li class='list-group-item'id='"+index+"'>"+value+"</li>")
-      });
+      if(data){
+        console.log(data);
+        $(".modal-title").html(data.note.title);
+        var note = data.note.body.trim().split(/\r?\n/);
+        console.log(note.length);
+        console.log(note);
+        $(".modal-body").append("<div id='divNoteList'><ul class='list-group' id='noteList'></ul><div>");
+        $.each(note, function( index, value ) {
+          $("#noteList").append("<li class='list-group-item'id='"+index+"'>"+value+"</li>")
+        });
+      }
+
       
       $("#myModal").modal();
     });
