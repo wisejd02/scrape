@@ -146,8 +146,9 @@ app.get("/articles/:id", function(req, res) {
     .populate("note")
     .then(function(dbArticle) {
       // If we were able to successfully find an Article with the given id, send it back to the client
+      console.log(dbArticle);
       res.json(dbArticle);
-      //console.log(dbArticle);
+      
       // console.log(dbArticle.note);
       // console.log(dbArticle.note.title);
       // console.log(dbArticle.note.body);

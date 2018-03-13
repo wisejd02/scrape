@@ -23,16 +23,21 @@ $(".btn").on('click', function(){
       method: "GET",
       url: "/articles/" + thisId
     }).done(function(data) {
-      if(data){
-        console.log(data);
+      console.log('data');
+      console.log(data);
+      $(".modal-body").append("<div id='divNoteList'><ul class='list-group' id='noteList'></ul><div>");
+      if(data.note){
+        alert("is a note")
         $(".modal-title").html(data.note.title);
         var note = data.note.body.trim().split(/\r?\n/);
         console.log(note.length);
         console.log(note);
-        $(".modal-body").append("<div id='divNoteList'><ul class='list-group' id='noteList'></ul><div>");
         $.each(note, function( index, value ) {
           $("#noteList").append("<li class='list-group-item'id='"+index+"'>"+value+"</li>")
         });
+      }else{
+        alert("is no note")
+        $(".modal-title").html("No notes for this item!"); 
       }
 
       
