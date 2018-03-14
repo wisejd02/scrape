@@ -13,8 +13,10 @@ $(function() {
 $(".btn").on('click', function(){
   //alert("I work");
   console.log(this);
+  var id = $(this).attr("data-id");
   console.log($(this).attr("data-id"));
   console.log($(this).attr("id"));
+  $(".btn").data( "id" ) === $(this).attr("data-id");
   if($(this).attr("id") === 'btnDeleteFavorite'){
     alert("Removed from your favorites")
   }else if($(this).attr("id") === 'btnAddNote'){
@@ -25,9 +27,8 @@ $(".btn").on('click', function(){
     }).done(function(data) {
       console.log('data');
       console.log(data);
-      $(".modal-body").append("<div id='divNoteList'><ul class='list-group' id='noteList'></ul><div>");
+      $("#divAddNote").append("<div id='divNoteList' data-id=" + thisId +"><ul class='list-group' id='noteList'></ul><div>");
       if(data.note){
-        alert("is a note")
         $(".modal-title").html(data.note.title);
         var note = data.note.body.trim().split(/\r?\n/);
         console.log(note.length);
@@ -35,9 +36,29 @@ $(".btn").on('click', function(){
         $.each(note, function( index, value ) {
           $("#noteList").append("<li class='list-group-item'id='"+index+"'>"+value+"</li>")
         });
+        $("#btnDeleteNote").hide();
+        $("#btnSaveNote").hide();
+        $("#btnCancelNote").hide();
+        $("#btnNewNote").show();
+        $("#divTitle").hide();
+        $("#divBody").hide(); 
       }else{
-        alert("is no note")
-        $(".modal-title").html("No notes for this item!"); 
+          $("#btnSaveNote").show();
+          $("#btnCancelNote").show();
+          $("#btnNewNote").hide();
+          $("#btnDeleteNote").hide();
+          $(".modal-title").html("No notes for this item!");
+          $("#divTitle").show();
+          $("#divBody").show(); 
+          // $("#noteList").append(`
+          //   <div class="input-group form-control">
+          //     <input id="titleinput" type="text" placeholder="Enter Title" class="form-control" >
+          //   </div>
+          //   <div class="input-group form-control">
+          //     <input id="bodyinput" type="text" placeholder="Enter Note" class="form-control">
+          //   </div>
+          // `)
+          
       }
 
       
@@ -48,14 +69,13 @@ $(".btn").on('click', function(){
 })
 
 $('#myModal').on('hidden.bs.modal', function () {
-  $(".modal-body").html("");
+  $("ul").html("");
+  $("#titleinput").val("");
+  $("#bodyinput").val("");
 })
 
 $('#myModal').on('show.bs.modal', function () {
-  $("#btnDeleteNote").hide();
-  $("#btnSaveNote").hide();
-  $("#btnCancelNote").hide();
-  $("#btnNewNote").show();
+ 
 })
 
 
@@ -105,27 +125,57 @@ $(".modal-body").on("click", "li", function() {
 
 $("#btnNewNote").on("click",function(){
   $("#btnNewNote").hide();
-  $("#noteList").append(`
-    <div class="input-group form-control">
-      <input type="text" class="form-control" aria-label="...">
-    </div>
-  `)
+  // $("#noteList").append(`
+  //   <div class="input-group form-control">
+  //     <input id="bodyinput" type="text" placeholder="Enter Note" class="form-control" aria-label="...">
+  //   </div>
+  // `)
+  //$("divTitle").hide();
+  $("#divBody").show(); 
   $("#btnSaveNote").show();
   $("#btnCancelNote").show();
 });
 
-$("#btnSaveNote").on("click",function(){
-  $("#btnSaveNote").hide();
-  $("#btnCancelNote").hide();
-  $("#btnNewNote").show();
-  $(".input-group").remove();
-});
+$("#titleinput").on('change',function(){
+  console.log($(this).val())
+})
+$("#bodyinput").on('change',function(){
+  console.log($(this).val())
+})
+
+    $("#btnSaveNote").on("click",function(){
+      $("#btnSaveNote").hide();
+      $("#btnCancelNote").hide();
+      $("#btnNewNote").show();
+      var title = $("#titleinput").val();
+      var body = $("#bodyinput").val();
+      var thisId = $("#divNoteList").attr("data-id");
+      console.log(thisId);
+      console.log(title);
+      console.log(body);
+      
+      // $.ajax({
+      //   method: "POST",
+      //   url: "/articles/" + thisId,
+      //   data: {
+      //     // Value taken from title input
+      //     title: $("#titleinput").val(),
+      //     // Value taken from note textarea
+      //     body: $("#bodyinput").val()
+      //   }
+      // })
+    });
+
+
+
 
 $("#btnCancelNote").on("click",function(){
+  $("#bodyinput").val("");
   $("#btnSaveNote").hide();
   $("#btnCancelNote").hide();
   $("#btnNewNote").show();
-  $(".input-group").remove();
+  // $("#divTitle").hide();
+  // $("#divBody").hide();
 });
 
 // When you click the savenote button

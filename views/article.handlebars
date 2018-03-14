@@ -10,16 +10,17 @@
               <div class="caption">
                 <h3>{{this.title}}</h3>
                 <p data-id={{this.id}}>{{this.link}}</p>
-                <p><a class="btn btn-primary" role="button" data-id={{this.id}} id='btnDeleteFavorite'>Remove Favorite</a> <a class="btn btn-default" role="button"data-id={{this.id}} id='btnAddNote'>Add Note</a></p>
+                <p><a class="btn btn-primary" role="button" data-id={{this.id}} id='btnDeleteFavorite'>Remove Favorite</a> <a class="btn btn-default" role="button"data-id={{this.id}} id='btnAddNote'>Notes</a></p>
               </div>
             </div>
           </div>
         </div>
+        
   {{/each}}
     <div class="row">
           <div class="col-sm-6 col-md-4"></div>
       </div>
-{{> articles/article-block}}
+      {{> articles/article-block}}
   
       
   </div>
