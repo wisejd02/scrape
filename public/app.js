@@ -2,27 +2,22 @@
 $(function() {
 
 $(".btn").on('click', function(){
-  //alert("I work");
   console.log(this);
   var id = $(this).attr("data-id");
   console.log($(this).attr("data-id"));
   console.log($(this).attr("id"));
   $(".btn").data( "id" ) === $(this).attr("data-id");
   if($(this).attr("id") === 'btnDeleteFavorite'){
-    //alert("Removed from your favorites")
     $.ajax({
       method: "POST",
       url: "/removeFavorite",
       data: {_id: $(this).attr("data-id")}
     })
-      
         // Reload the page to get the updated list
         location.reload();
-      
-   
-    
   }else if($(this).attr("id") === 'btnAddNote'){
     var thisId = $(this).attr("data-id");
+    $('#myModal').attr("data-id",thisId);
     $.ajax({
       method: "GET",
       url: "/articles/" + thisId
@@ -30,36 +25,6 @@ $(".btn").on('click', function(){
       console.log('data');
       console.log(data);
       $("#divAddNote").append("<div id='divNoteList' data-id=" + thisId +"><ul class='list-group' id='noteList'></ul><div>");
-      if(data.note){
-        $(".modal-title").html(data.note.title);
-        console.log('data.note.body');
-        console.log(data.note.body);
-        var note = data.note.body.trim().split(";,");
-        console.log('note.length');
-        console.log(note.length);
-        
-        $.each(note, function( index, value ) {
-          console.log(index);
-          console.log(value.split(';').join(""));
-          $("#noteList").append("<li class='list-group-item'id='"+index+"'>"+value.split(';').join("")+"</li>")
-        });
-        $("#btnDeleteNote").hide();
-        $("#btnSaveNote").hide();
-        $("#btnCancelNote").hide();
-        $("#btnNewNote").show();
-        $("#divTitle").hide();
-        $("#divBody").hide();
-      }else{
-          $("#btnSaveNote").show();
-          $("#btnCancelNote").show();
-          $("#btnNewNote").hide();
-          $("#btnDeleteNote").hide();
-          $(".modal-title").html("No notes for this item!");
-          $("#divTitle").show();
-          $("#divBody").show();           
-      }
-
-      
       $("#myModal").modal();
     });
     
@@ -67,17 +32,52 @@ $(".btn").on('click', function(){
 })
 
 $('#myModal').on('hidden.bs.modal', function () {
-  $("ul").html("");
+  $("#noteList").html("");
   $("#titleinput").val("");
   $("#bodyinput").val("");
 })
 
 $('#myModal').on('show.bs.modal', function () {
- 
+  console.log('$(this).attr("data-id")');
+  console.log($(this).attr("data-id"));
+  var pk = $(this).attr("data-id");
+  $.ajax({
+    method: "GET",
+    url: "/notes/" + pk
+  }).done(function(data) {
+    console.log('show.bs.modaldata');
+    populateModal(data);
+  })
 })
 
+function populateModal(data){
+  if(data.length >0){
+    $(".modal-title").html(data[0].title);
+    console.log('data.note.body');
+    console.log(data);
+    $.each(data, function( index, value ) {
+      console.log(index);
+      console.log(value);
+      $("#noteList").append("<li class='list-group-item'id='"+index+"'>"+value.body+"</li>")
+    });
+    $("#btnDeleteNote").hide();
+    $("#btnSaveNote").hide();
+    $("#btnCancelNote").hide();
+    $("#btnNewNote").show();
+    $("#divTitle").hide();
+    $("#divBody").hide();
+  }else{
+      $("#btnSaveNote").show();
+      $("#btnCancelNote").show();
+      $("#btnNewNote").hide();
+      $("#btnDeleteNote").hide();
+      $(".modal-title").html("No notes for this item!");
+      $("#divTitle").show();
+      $("#divBody").show();           
+  }
+}
 
-// Whenever someone clicks a p tag
+
 $(".modal-body").on("click", "li", function() {
   console.log(this);
   $("#divBody").hide();
@@ -102,12 +102,6 @@ $("#btnNewNote").on("click",function(){
   $("#btnCancelNote").show();
 });
 
-$("#titleinput").on('change',function(){
-  console.log($(this).val())
-})
-$("#bodyinput").on('change',function(){
-  console.log($(this).val())
-})
 
     $("#btnSaveNote").on("click",function(){
       $("#btnSaveNote").hide();
@@ -132,7 +126,7 @@ $("#bodyinput").on('change',function(){
     });
 
     function postNote(title, body, thisId){
-      body = body+";"
+      body = body
       console.log(thisId);
       console.log(title);
       console.log(body);
@@ -154,7 +148,7 @@ $("#bodyinput").on('change',function(){
 
 $("#btnDeleteNote").on("click",function(){
    console.log($(".active").html());
-   remArticle = $(".active").html()+";"
+   remArticle = $(".active").html();
    $.ajax({
     method: "POST",
     url: "/removeNote",

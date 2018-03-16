@@ -81,26 +81,11 @@ app.get("/scrape", function(req, res) {
         result.link = link;
         result.image = image;
         arrResults.push(result);
-        // Create a new Article using the `result` object built from scraping
-        // db.Article.create(result)
-        // .then(function(dbArticle) {
-        //   // View the added result in the console
-        //   for (var i = 0; i < dbArticle.length; i++) {
-        //     dbArticle[i].image = dbArticle[i].image.replace(/'/g,"");
-        //   }
-        //   console.log(dbArticle);
-        //   //res.render("index", {title:'Scraping With Mongoose and HBS',message:'Scrape Complete',hbsObject:dbArticle})
-        // })
-        // .catch(function(err) {
-        //   // If an error occurred, send it to the client
-        //   return res.json(err);
-        // });
       }
       
     });
     
     // If we were able to successfully scrape and save an Article, send a message to the client
-    //res.send("Scrape Complete");
     for (var i = 0; i < arrResults.length; i++) {
       arrResults[i].image = arrResults[i].image.replace(/'/g,"");
         }
@@ -120,20 +105,11 @@ app.get("/articles", function(req, res) {
   db.Article.find({})
     .then(function(dbArticle) {
       // If we were able to successfully find Articles, send them back to the client
-      
       for (var i = 0; i < dbArticle.length; i++) {
         dbArticle[i].image = dbArticle[i].image.replace(/'/g,"");
       }
-      console.log(dbArticle);
-      // var hbsObject = {
-      //   title: dbArticle[0].title,
-      //   link: dbArticle[0].link
-      // };
-       //console.log(hbsObject);
+        console.log(dbArticle);
         res.render("article", {title:'Scraping With Mongoose and HBS',hbsObject: dbArticle,script:'/app.js'})
-
-
-      //res.json(dbArticle);
     })
     .catch(function(err) {
       // If an error occurred, send it to the client
@@ -146,10 +122,7 @@ app.get("/notes:title", function(req,res){
   db.Note.find({title: req.params.title}).then(function(dbnote) {
         
     console.log(dbnote);
-  // bulk.execute(function (err, res) {
     console.log('Done!');
-    //console.log(res);
-    //console.log(req);
     })
 
 })
@@ -163,32 +136,11 @@ app.get("/articles/:id", function(req, res) {
     .populate("note")
     .then(function(dbArticle) {
       // If we were able to successfully find an Article with the given id, send it back to the client
-      console.log(dbArticle);
-      
-      
-      console.log(dbArticle.note);
-      console.log(dbArticle.note.title);
-      // console.log(dbArticle.note.body);
-      // var bulk = db.Note.initializeOrderedBulkOp()
-
-      db.Note.find({primaryKey: dbArticle._id}).then(function(dbnote) {
-        console.log("-----------")
-        var notes = [];
-        for(var i =0;i <dbnote.length; i++){
-         notes.push(dbnote[i].body) 
-        }
-        dbArticle.note.body = notes;
+        console.log(dbArticle);
         console.log(dbArticle.note);
-       
-        //console.log('dbArticle');
-        //console.log(dbArticle);
-      // bulk.execute(function (err, res) {
+        console.log(dbArticle.note.title);
         res.json(dbArticle);
         console.log('Done!');
-      })
-      
-      
-      // res.render("article-block", {hbsModalObject: dbArticle.note.title});
     })
     .catch(function(err) {
       // If an error occurred, send it to the client
@@ -228,49 +180,23 @@ app.post("/favorites", function(req, res) {
 app.post("/removeNote", function(req, res) {
   console.log("#####req.body")
   console.log(req.body)
-  var itmID = "a10122112ac1";
   db.Note.deleteOne(req.body).then(function(dbnote) {
     console.log("deleted note")
-    db.Article.update({_id:dbnote.itmID},{note:itmID}).then(function(dbarticle){
-      console.log("^%^%^%^%^")
-      console.log(dbarticle)
-    })
-    //return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbnote._id }, { new: true });
   })
-  // db.Note.find(req.body).then(function(dbnote)
-  // {
-  //   console.log("-----dbnote.primaryKey------")
-  //   console.log(dbnote)
-  //   itmID = dbnote.primaryKey;
-  //   }).then(
-  //     db.Note.findOne({body:{$ne:req.body.body}}).then(function(dbnote)
-  //     {
-  //       console.log("{body:{$ne:req.body.body}}")
-  //       console.log(dbnote)
-  //       //db.Article.findOneAndUpdate()
-  //       // db.Article.update({_id:dbnote.itmID},{note:itmID}).then(function(dbarticle){
-  //       //   console.log("^%^%^%^%^")
-  //       //   console.log(dbarticle)
-  //       // })
-  //     })
-  //   //   db.Note.deleteOne(req.body).then(function(dbnote) {
-  //   //   console.log("deleted note")
-  //   // })
-  // ).then(
-  //   // db.Note.deleteOne(req.body).then(function(dbnote) {
-  //   //     console.log("deleted note")
-        
-  //   //     //return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbnote._id }, { new: true });
-  //   //   })
-  // )
-  
-  // db.Article.update({_id:dbnote.itmID},{note:itmID}).then(function(dbarticle){
-  //   console.log("^%^%^%^%^")
-  //   console.log(dbarticle)
-  // })
-  
   
 });
+
+app.get("/notes/:id", function(req, res) {
+  // Grab every document in the Articles collection
+  console.log("-------notes req.body")
+  console.log(req.params.id )
+  
+  db.Note.find({primaryKey: req.params.id}).then(function(dbnote) {
+    console.log("-----dbnote------")
+    console.log(dbnote)
+    res.json(dbnote);
+  })
+  });
 
 app.post("/removeFavorite", function(req, res) {
   console.log(req.body._id)
