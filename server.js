@@ -171,7 +171,7 @@ app.get("/articles/:id", function(req, res) {
       // console.log(dbArticle.note.body);
       // var bulk = db.Note.initializeOrderedBulkOp()
 
-      db.Note.find({title: dbArticle.note.title}).then(function(dbnote) {
+      db.Note.find({primaryKey: dbArticle._id}).then(function(dbnote) {
         console.log("-----------")
         var notes = [];
         for(var i =0;i <dbnote.length; i++){
@@ -226,10 +226,61 @@ app.post("/favorites", function(req, res) {
 });
 
 app.post("/removeNote", function(req, res) {
+  console.log("#####req.body")
   console.log(req.body)
-  
+  var itmID = "a10122112ac1";
   db.Note.deleteOne(req.body).then(function(dbnote) {
-    console.log(dbnote)
+    console.log("deleted note")
+    db.Article.update({_id:dbnote.itmID},{note:itmID}).then(function(dbarticle){
+      console.log("^%^%^%^%^")
+      console.log(dbarticle)
+    })
+    //return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbnote._id }, { new: true });
+  })
+  // db.Note.find(req.body).then(function(dbnote)
+  // {
+  //   console.log("-----dbnote.primaryKey------")
+  //   console.log(dbnote)
+  //   itmID = dbnote.primaryKey;
+  //   }).then(
+  //     db.Note.findOne({body:{$ne:req.body.body}}).then(function(dbnote)
+  //     {
+  //       console.log("{body:{$ne:req.body.body}}")
+  //       console.log(dbnote)
+  //       //db.Article.findOneAndUpdate()
+  //       // db.Article.update({_id:dbnote.itmID},{note:itmID}).then(function(dbarticle){
+  //       //   console.log("^%^%^%^%^")
+  //       //   console.log(dbarticle)
+  //       // })
+  //     })
+  //   //   db.Note.deleteOne(req.body).then(function(dbnote) {
+  //   //   console.log("deleted note")
+  //   // })
+  // ).then(
+  //   // db.Note.deleteOne(req.body).then(function(dbnote) {
+  //   //     console.log("deleted note")
+        
+  //   //     //return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbnote._id }, { new: true });
+  //   //   })
+  // )
+  
+  // db.Article.update({_id:dbnote.itmID},{note:itmID}).then(function(dbarticle){
+  //   console.log("^%^%^%^%^")
+  //   console.log(dbarticle)
+  // })
+  
+  
+});
+
+app.post("/removeFavorite", function(req, res) {
+  console.log(req.body._id)
+  
+  db.Article.deleteOne(req.body).then(function(dbarticle) {
+    console.log("removed favorite Item")
+  });
+
+  db.Note.deleteMany({primaryKey:req.body._id}).then(function(dbnotes) {
+    console.log("removed favorite Item notes")
   });
 
 });

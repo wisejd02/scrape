@@ -8,7 +8,8 @@
             <div class="thumbnail">
               <img class="img-rounded thumbnail" src={{this.image}} alt='{{this.image}}' height='142' width='142'>
               <div class="caption">
-                <h3>{{this.title}}</h3>
+                
+                <a href="{{this.link}}"><h3>{{this.title}}</h3></a>
                 <p data-id={{this.id}}>{{this.link}}</p>
                 <p><a class="btn btn-primary" role="button" data-id={{this.id}} id='btnDeleteFavorite'>Remove Favorite</a> <a class="btn btn-default" role="button"data-id={{this.id}} id='btnAddNote'>Notes</a></p>
               </div>

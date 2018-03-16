@@ -9,7 +9,9 @@ var NoteSchema = new Schema({
   // `title` is of type String
   title: String,
   // `body` is of type String
-  body: String
+  body: String,
+  //id of saved favorite item for association for deletion
+  primaryKey: String
 });
 
 // This creates our model from the above schema, using mongoose's model method

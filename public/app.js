@@ -1,14 +1,5 @@
 // Make sure we wait to attach our handlers until the DOM is fully loaded.
 $(function() {
-// Grab the articles as a json
-// $.getJSON("/articles", function(data) {
-//   // For each one
-//   for (var i = 0; i < data.length; i++) {
-//     var image = data[i].image.replace(/'/g,"");
-//     // Display the apropos information on the page
-//     $("#articles").append("<img src='"+image+"' alt='"+ data[i].image +"' height='142' width='142'><p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link +"</p>");
-//   }
-// });
 
 $(".btn").on('click', function(){
   //alert("I work");
@@ -18,7 +9,18 @@ $(".btn").on('click', function(){
   console.log($(this).attr("id"));
   $(".btn").data( "id" ) === $(this).attr("data-id");
   if($(this).attr("id") === 'btnDeleteFavorite'){
-    alert("Removed from your favorites")
+    //alert("Removed from your favorites")
+    $.ajax({
+      method: "POST",
+      url: "/removeFavorite",
+      data: {_id: $(this).attr("data-id")}
+    })
+      
+        // Reload the page to get the updated list
+        location.reload();
+      
+   
+    
   }else if($(this).attr("id") === 'btnAddNote'){
     var thisId = $(this).attr("data-id");
     $.ajax({
@@ -30,13 +32,16 @@ $(".btn").on('click', function(){
       $("#divAddNote").append("<div id='divNoteList' data-id=" + thisId +"><ul class='list-group' id='noteList'></ul><div>");
       if(data.note){
         $(".modal-title").html(data.note.title);
-        var note = data.note.body.trim().split("|,");
-        console.log(note.length);
+        console.log('data.note.body');
         console.log(data.note.body);
+        var note = data.note.body.trim().split(";,");
+        console.log('note.length');
+        console.log(note.length);
+        
         $.each(note, function( index, value ) {
           console.log(index);
-          console.log(value.split('|').join(""));
-          $("#noteList").append("<li class='list-group-item'id='"+index+"'>"+value.split('|').join("")+"</li>")
+          console.log(value.split(';').join(""));
+          $("#noteList").append("<li class='list-group-item'id='"+index+"'>"+value.split(';').join("")+"</li>")
         });
         $("#btnDeleteNote").hide();
         $("#btnSaveNote").hide();
@@ -51,16 +56,7 @@ $(".btn").on('click', function(){
           $("#btnDeleteNote").hide();
           $(".modal-title").html("No notes for this item!");
           $("#divTitle").show();
-          $("#divBody").show(); 
-          // $("#noteList").append(`
-          //   <div class="input-group form-control">
-          //     <input id="titleinput" type="text" placeholder="Enter Title" class="form-control" >
-          //   </div>
-          //   <div class="input-group form-control">
-          //     <input id="bodyinput" type="text" placeholder="Enter Note" class="form-control">
-          //   </div>
-          // `)
-          
+          $("#divBody").show();           
       }
 
       
@@ -95,48 +91,10 @@ $(".modal-body").on("click", "li", function() {
   }else{
     $("#btnDeleteNote").hide();
   }
-
-  
-  //Empty the notes from the note section
-  // $("#notes").empty();
-  // // Save the id from the p tag
-  // var thisId = $(this).attr("data-id");
-
-  // // Now make an ajax call for the Article
-  // $.ajax({
-  //   method: "GET",
-  //   url: "/articles/" + thisId
-  // })
-  //   // With that done, add the note information to the page
-  //   .then(function(data) {
-  //     console.log(data);
-  //     // The title of the article
-  //     $("#notes").append("<h2>" + data.title + "</h2>");
-  //     // An input to enter a new title
-  //     $("#notes").append("<input id='titleinput' name='title' >");
-  //     // A textarea to add a new note body
-  //     $("#notes").append("<textarea id='bodyinput' name='body'></textarea>");
-  //     // A button to submit a new note, with the id of the article saved to it
-  //     $("#notes").append("<button data-id='" + data._id + "' id='savenote'>Save Note</button>");
-
-  //     // If there's a note in the article
-  //     if (data.note) {
-  //       // Place the title of the note in the title input
-  //       $("#titleinput").val(data.note.title);
-  //       // Place the body of the note in the body textarea
-  //       $("#bodyinput").val(data.note.body);
-  //     }
-  //   });
 });
 
 $("#btnNewNote").on("click",function(){
   $("#btnNewNote").hide();
-  // $("#noteList").append(`
-  //   <div class="input-group form-control">
-  //     <input id="bodyinput" type="text" placeholder="Enter Note" class="form-control" aria-label="...">
-  //   </div>
-  // `)
-  //$("divTitle").hide();
   $('.modal-body li').removeClass('active');
   $("#btnDeleteNote").hide();
   $("#divBody").show(); 
@@ -174,7 +132,7 @@ $("#bodyinput").on('change',function(){
     });
 
     function postNote(title, body, thisId){
-      body = body+"|"
+      body = body+";"
       console.log(thisId);
       console.log(title);
       console.log(body);
@@ -185,7 +143,9 @@ $("#bodyinput").on('change',function(){
           // Value taken from title input
           title: title,
           // Value taken from note textarea
-          body: body
+          body: body,
+
+          primaryKey: thisId
         }
       })
       $("#titleinput").val("");
@@ -194,7 +154,7 @@ $("#bodyinput").on('change',function(){
 
 $("#btnDeleteNote").on("click",function(){
    console.log($(".active").html());
-   remArticle = $(".active").html()+"|"
+   remArticle = $(".active").html()+";"
    $.ajax({
     method: "POST",
     url: "/removeNote",
@@ -209,36 +169,6 @@ $("#btnCancelNote").on("click",function(){
   $("#btnSaveNote").hide();
   $("#btnCancelNote").hide();
   $("#btnNewNote").show();
-  // $("#divTitle").hide();
-  // $("#divBody").hide();
 });
 
-// When you click the savenote button
-$(document).on("click", "#savenote", function() {
-  // Grab the id associated with the article from the submit button
-  var thisId = $(this).attr("data-id");
-
-  // Run a POST request to change the note, using what's entered in the inputs
-  $.ajax({
-    method: "POST",
-    url: "/articles/" + thisId,
-    data: {
-      // Value taken from title input
-      title: $("#titleinput").val(),
-      // Value taken from note textarea
-      body: $("#bodyinput").val()
-    }
-  })
-    // With that done
-    .then(function(data) {
-      // Log the response
-      console.log(data);
-      // Empty the notes section
-      $("#notes").empty();
-    });
-
-  // Also, remove the values entered in the input and textarea for note entry
-  $("#titleinput").val("");
-  $("#bodyinput").val("");
-});
 });
