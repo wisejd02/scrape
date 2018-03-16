@@ -30,18 +30,20 @@ $(".btn").on('click', function(){
       $("#divAddNote").append("<div id='divNoteList' data-id=" + thisId +"><ul class='list-group' id='noteList'></ul><div>");
       if(data.note){
         $(".modal-title").html(data.note.title);
-        var note = data.note.body.trim().split(/\r?\n/);
+        var note = data.note.body.trim().split("|,");
         console.log(note.length);
-        console.log(note);
+        console.log(data.note.body);
         $.each(note, function( index, value ) {
-          $("#noteList").append("<li class='list-group-item'id='"+index+"'>"+value+"</li>")
+          console.log(index);
+          console.log(value.split('|').join(""));
+          $("#noteList").append("<li class='list-group-item'id='"+index+"'>"+value.split('|').join("")+"</li>")
         });
         $("#btnDeleteNote").hide();
         $("#btnSaveNote").hide();
         $("#btnCancelNote").hide();
         $("#btnNewNote").show();
         $("#divTitle").hide();
-        $("#divBody").hide(); 
+        $("#divBody").hide();
       }else{
           $("#btnSaveNote").show();
           $("#btnCancelNote").show();
@@ -82,6 +84,10 @@ $('#myModal').on('show.bs.modal', function () {
 // Whenever someone clicks a p tag
 $(".modal-body").on("click", "li", function() {
   console.log(this);
+  $("#divBody").hide();
+  $("#btnNewNote").show();
+  $("#btnSaveNote").hide();
+  $("#btnCancelNote").hide();
   $('.modal-body li').not(this).removeClass('active');
   $(this).toggleClass("active");
   if($( "li" ).hasClass( "active" )){
@@ -131,6 +137,8 @@ $("#btnNewNote").on("click",function(){
   //   </div>
   // `)
   //$("divTitle").hide();
+  $('.modal-body li').removeClass('active');
+  $("#btnDeleteNote").hide();
   $("#divBody").show(); 
   $("#btnSaveNote").show();
   $("#btnCancelNote").show();
@@ -147,26 +155,53 @@ $("#bodyinput").on('change',function(){
       $("#btnSaveNote").hide();
       $("#btnCancelNote").hide();
       $("#btnNewNote").show();
+     
       var title = $("#titleinput").val();
       var body = $("#bodyinput").val();
       var thisId = $("#divNoteList").attr("data-id");
       console.log(thisId);
       console.log(title);
       console.log(body);
+      if(title && body && thisId){
+        postNote(title, body, thisId);
+      }else if(body && thisId){
+        title = $('.modal-title').html();
+        console.log(title);
+        postNote(title, body, thisId);
+      }
       
-      // $.ajax({
-      //   method: "POST",
-      //   url: "/articles/" + thisId,
-      //   data: {
-      //     // Value taken from title input
-      //     title: $("#titleinput").val(),
-      //     // Value taken from note textarea
-      //     body: $("#bodyinput").val()
-      //   }
-      // })
+      
     });
 
+    function postNote(title, body, thisId){
+      body = body+"|"
+      console.log(thisId);
+      console.log(title);
+      console.log(body);
+      $.ajax({
+        method: "POST",
+        url: "/articles/" + thisId,
+        data: {
+          // Value taken from title input
+          title: title,
+          // Value taken from note textarea
+          body: body
+        }
+      })
+      $("#titleinput").val("");
+      $("#bodyinput").val("");
+    }
 
+$("#btnDeleteNote").on("click",function(){
+   console.log($(".active").html());
+   remArticle = $(".active").html()+"|"
+   $.ajax({
+    method: "POST",
+    url: "/removeNote",
+    data: {body: remArticle}
+  })
+
+});
 
 
 $("#btnCancelNote").on("click",function(){
