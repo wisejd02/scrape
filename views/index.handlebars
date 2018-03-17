@@ -2,17 +2,17 @@
 <div align="center" id="wrapper" >
       <h1>{{title}}</h1> 
         
-        <div class="row col-sm-6 col-md-4" ></div>
+        {{!-- <div class="row col-sm-6 col-md-6" ></div> --}}
         <div class="row">
-          <div class="col-sm-6 col-md-4">
+          <div class="col-sm-12 col-md-12">
                 <p>{{message}}</p>
-                <p><a href="/scrape" class="btn btn-primary" role="button" id='btnGetArticle'>Gather Intel</a> </p>
+                <p><a href="/scrape" class="btn btn-primary " role="button" id='btnGetArticle'>Gather Intel</a> </p>
               </div>
             </div>
         {{#each hbsObject}}
-        <div class="row col-sm-6 col-md-4" ></div>
+        <div class="row col-sm-2 col-md-2" ></div>
         <div class="row">
-          <div class="col-sm-6 col-md-4">
+          <div class="col-sm-8 col-md-8">
             <div class="thumbnail">
               <img class="img-rounded thumbnail" src={{this.image}} alt='{{this.image}}' height='142' width='142'>
               <div class="caption">
@@ -22,13 +22,15 @@
               </div>
             </div>
           </div>
+          <div class="row col-sm-2 col-md-2" ></div>
         </div>
+        
   {{/each}}
           
 
-    <div class="row">
+    {{!-- <div class="row">
           <div class="col-sm-6 col-md-4"></div>
-      </div>
+      </div> --}}
 
   
       
